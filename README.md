@@ -1,2 +1,3 @@
 # PDF_Merger
- Merge two PDF files into one
+
+App to merge two PDFs documents into a single file

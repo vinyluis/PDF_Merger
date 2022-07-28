@@ -1,0 +1,6 @@
+*.spec
+.vscode
+__pycache__
+*.pdf
+*.txt
+.ipynb_checkpoints
