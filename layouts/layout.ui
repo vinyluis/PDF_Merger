@@ -175,17 +175,17 @@
    <widget class="QLabel" name="img_file1">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>20</x>
       <y>30</y>
-      <width>131</width>
-      <height>101</height>
+      <width>130</width>
+      <height>100</height>
      </rect>
     </property>
     <property name="text">
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>../source/TOCLogo.png</pixmap>
+     <pixmap>../images/icon_notloaded.png</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -228,15 +228,15 @@
      <rect>
       <x>230</x>
       <y>30</y>
-      <width>131</width>
-      <height>101</height>
+      <width>130</width>
+      <height>100</height>
      </rect>
     </property>
     <property name="text">
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>../source/TOCLogo.png</pixmap>
+     <pixmap>../images/icon_notloaded.png</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>

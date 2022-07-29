@@ -4,11 +4,13 @@ Main code for the PDF Merger with a simple PyQT-based GUI
 
 # ---- IMPORTS ----
 
-from time import sleep
+import os
 import sys
+from time import sleep
 from PyPDF2 import PdfMerger
 
 # Window building
+from PyQt5 import QtGui
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.QtWidgets import QMessageBox, QFileDialog
 from PyQt5.QtCore import QObject, QThread, pyqtSignal
@@ -17,11 +19,42 @@ from PyQt5.QtCore import QObject, QThread, pyqtSignal
 from layouts.layout import Ui_MainWindow
 
 # Software version
-v = "V. 1.0.0"
+v = "v1.0.1"
 
-# Path to the logo and icon
-# logo_path = "source/logo.png"
-# icon_path = "source/icon.png"
+# ---- FUNCTIONS ----
+
+
+def message_box(type, msg):
+    # Type assessment
+    if type == "error":
+        title = "Error!"
+    elif type == "info":
+        title = "PDF Merger"
+    else:
+        raise ValueError(f"Type undefined for message box. Received {type}")
+    # Creates and displays the message box
+    msgbox = QMessageBox()
+    msgbox.setWindowTitle(title)
+    msgbox.setText(msg)
+    msgbox.exec_()
+    return -1
+
+
+def resource_path(relative_path):
+    """
+    Get absolute path to resource, works for dev and for PyInstaller
+    https://stackoverflow.com/questions/31836104/pyinstaller-and-onefile-how-to-include-an-image-in-the-exe-file
+    """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
+
+# ---- CLASSES ----
 
 
 class MainWindow(Ui_MainWindow):
@@ -45,8 +78,9 @@ class MainWindow(Ui_MainWindow):
         super(MainWindow, self).setupUi(Window)
         # ---- Adds new instructions ----
         # Defines logo and icon paths
-        # self.logo.setPixmap(QtGui.QPixmap(logo_path))
-        # Window.setWindowIcon(QtGui.QIcon(icon_path))
+        self.img_file1.setPixmap(QtGui.QPixmap(img_notloaded_path))
+        self.img_file2.setPixmap(QtGui.QPixmap(img_notloaded_path))
+        Window.setWindowIcon(QtGui.QIcon(icon_path))
         # Shows the SW version on the status bar
         self.set_status(v)
         # Sets up the signal connections
@@ -67,8 +101,8 @@ class MainWindow(Ui_MainWindow):
         """
         Build the connections
         """
-        self.but_file1.clicked.connect(lambda: self.run_off_thread(lambda: self.merger.load_file(1, self.lbl_file1)))
-        self.but_file2.clicked.connect(lambda: self.run_off_thread(lambda: self.merger.load_file(2, self.lbl_file2)))
+        self.but_file1.clicked.connect(lambda: self.run_off_thread(lambda: self.merger.load_file(1, self.lbl_file1, self.img_file1)))
+        self.but_file2.clicked.connect(lambda: self.run_off_thread(lambda: self.merger.load_file(2, self.lbl_file2, self.img_file2)))
         self.but_merge.clicked.connect(lambda: self.run_off_thread(lambda: self.merger.merge_files()))
 
     def enable_all_buttons(self, state):
@@ -120,9 +154,6 @@ class MainWindow(Ui_MainWindow):
         sleep(1)
 
 
-# ---- CLASSES DE APOIO ----
-
-
 class Worker(QObject):
     """
     Generic woker for using threading. Runs the function passed on initialization.
@@ -146,7 +177,7 @@ class Merger():
     def __init__(self):
         self.files = {}
 
-    def load_file(self, num_file, label):
+    def load_file(self, num_file, label, img):
         """
         Loads the file defined by num_file and updates the label
         """
@@ -156,7 +187,7 @@ class Merger():
         # Choose the file
         file = self.open_file_dialog()
         # Store it in an attribute and update the label
-        if file is not None:
+        if (file is not None) and (file != ""):
             # Stores
             self.files[num_file] = file
             # Clip the text to 27 characters
@@ -168,6 +199,8 @@ class Merger():
                 filepath = file
             # Update the label accordingly
             label.setText(filepath)
+            # Updates the icon
+            img.setPixmap(QtGui.QPixmap(img_loaded_path))
 
     def merge_files(self):
         """
@@ -220,28 +253,18 @@ class Merger():
         return file
 
 
-# ---- FUNCTIONS ----
-
-def message_box(type, msg):
-    # Type assessment
-    if type == "error":
-        title = "Error!"
-    elif type == "info":
-        title = "PDF Merger"
-    else:
-        raise ValueError(f"Type undefined for message box. Received {type}")
-    # Creates and displays the message box
-    msgbox = QMessageBox()
-    msgbox.setWindowTitle(title)
-    msgbox.setText(msg)
-    msgbox.exec_()
-    return -1
-
-
 # ---- MAIN ----
 
 
 if __name__ == "__main__":
+
+    # Path to the images
+    img_loaded_path = resource_path("images/icon_loaded.png")
+    img_notloaded_path = resource_path("images/icon_notloaded.png")
+    icon_path = resource_path("images/icon.ico")
+
+    print(img_notloaded_path)
+
     print("Starting program....")
     app = QApplication(sys.argv)
     window = QMainWindow()

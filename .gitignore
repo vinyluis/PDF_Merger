@@ -1,6 +1,10 @@
-*.spec
+.ipynb_checkpoints
 .vscode
+notebook
+build
+dist
 __pycache__
+*.spec
 *.pdf
 *.txt
-.ipynb_checkpoints
+*.psd
